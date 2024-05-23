@@ -44,6 +44,8 @@ public extension Request {
 		case put = "PUT"
 		case delete = "DELETE"
 		case head = "HEAD"
+        case patch = "PATCH"
+        case unknown
 	}
 	
 	/// Represents a query parameter in the request.
