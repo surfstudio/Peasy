@@ -58,7 +58,7 @@ public final class Server {
 	///   - rules: The rules to match the request with. You can provide multiple rules using commas.
 	///   - delay: If provided, the response will be delayed by the specified delay when the rules are matched.
 	///   - removeAfterResponding: Whether the configuration should be removed after the response has been made. This is useful for replying with different responses when a request is made more than once. Defaults to false.
-	public func respond(with response: Response, when rules: Rule..., delay: TimeInterval? = nil, removeAfterResponding: Bool = false) {
+	public func respond(with response: Response, when rules: [Rule], delay: TimeInterval? = nil, removeAfterResponding: Bool = false) {
 		respond(with: { _ in response }, when: rules, removeAfterResponding: removeAfterResponding, delay: delay)
 	}
 	
@@ -72,7 +72,7 @@ public final class Server {
 	///   - rules: The rules to match the request with. You can provide multiple rules using commas.
 	///   - delay: If provided, the response will be delayed by the specified delay when the rules are matched.
 	///   - removeAfterResponding: Whether the configuration should be removed after the response has been made. This is useful for replying with different responses when a request is made more than once. Defaults to false.
-	public func respond(with response: @escaping () -> Response, when rules: Rule..., delay: TimeInterval? = nil, removeAfterResponding: Bool = false) {
+	public func respond(with response: @escaping () -> Response, when rules: [Rule], delay: TimeInterval? = nil, removeAfterResponding: Bool = false) {
 		respond(with: { _ in response() }, when: rules, removeAfterResponding: removeAfterResponding, delay: delay)
 	}
 	
@@ -86,7 +86,7 @@ public final class Server {
 	///   - rules: The rules to match the request with. You can provide multiple rules using commas.
 	///   - delay: If provided, the response will be delayed by the specified delay when the rules are matched.
 	///   - removeAfterResponding: Whether the configuration should be removed after the response has been made. This is useful for replying with different responses when a request is made more than once. Defaults to false.
-	public func respond(with response: @escaping (Request) -> Response, when rules: Rule..., delay: TimeInterval? = nil, removeAfterResponding: Bool = false) {
+	public func respond(with response: @escaping (Request) -> Response, when rules: [Rule], delay: TimeInterval? = nil, removeAfterResponding: Bool = false) {
 		respond(with: response, when: rules, removeAfterResponding: removeAfterResponding, delay: delay)
 	}
 	
@@ -181,7 +181,7 @@ public extension Server {
 		case path(matches: String)
 		case headers(contain: Request.Header)
 		case queryParameters(contain: Request.QueryParameter)
-		case body(matches: Data)
+        case body(matches: [String: Any])
 		case custom((Request) -> Bool)
 	}
 	
