@@ -20,8 +20,8 @@ final class ViewController: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		server.start()
-        server.respond(with: .image, when: [.path(matches: "/image")])
-        server.respond(with: .json, when: [.path(matches: "/json")])
+        server.respond(with: .image, when: .path(matches: "/image"))
+        server.respond(with: .json, when: .path(matches: "/json"))
         a(i: 0)
         b(i: 0)
 	}
