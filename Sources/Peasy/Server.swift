@@ -106,7 +106,7 @@ public final class Server {
 	// MARK: Private
 	
 	private func createSocket(bindingTo port: Int) -> Int {
-		let socket = Socket()
+        let socket = Socket(tag: Int32(port))
 		let port = socket.bind(port: port)
 		let eventListener = EventListener()
 		eventListener.register(socket) { [weak self] in
