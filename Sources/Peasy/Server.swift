@@ -19,7 +19,9 @@ public final class Server {
 	private var state: State = .notRunning
 	private var connections: Set<Connection> = []
 	private var configurations: [Configuration] = []
-	
+
+    private let connectionsQueue = DispatchQueue(label: "com.peasy.server.connections")
+
 	// MARK: - Init -
 	// MARK: Public
 	
@@ -133,13 +135,15 @@ public final class Server {
 		}
 		connections.insert(connection)
 	}
-	
-	private func handle(_ event: Connection.Event, for connection: Connection) {
-		switch event {
-		case .requestReceived(let request): handle(request, for: connection)
-		case .finished: connections.remove(connection)
-		}
-	}
+
+    private func handle(_ event: Connection.Event, for connection: Connection) {
+        connectionsQueue.sync {
+            switch event {
+            case .requestReceived(let request): handle(request, for: connection)
+            case .finished: connections.remove(connection)
+            }
+        }
+    }
 	
 	private func handle(_ request: Request, for connection: Connection) {
 		guard let config = configurations[request] else { return }

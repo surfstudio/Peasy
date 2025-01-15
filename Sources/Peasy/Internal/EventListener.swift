@@ -12,7 +12,9 @@ final class EventListener {
 	private let queue = kqueue()
 	private var handlers: [Int32: () -> Void] = [:]
 	private var item = DispatchWorkItem {}
-	
+
+    private let syncQueue = DispatchQueue(label: "com.peasy.eventlistener.sync")
+
 	func stop() {
 		item.cancel()
 		handlers.forEach { tag in
@@ -28,20 +30,25 @@ final class EventListener {
 	}
 	
 	func register(_ socket: Socket, _ handler: @escaping () -> Void) {
-		handlers[socket.tag] = handler
-		setState(EV_ADD, socket: socket.tag)
+        syncQueue.sync {
+            handlers[socket.tag] = handler
+            setState(EV_ADD, socket: socket.tag)
+        }
 	}
 	
 	func unregister(_ socket: Socket) {
-		setState(EV_DELETE, socket: socket.tag)
-		handlers[socket.tag] = nil
+        syncQueue.sync {
+            setState(EV_DELETE, socket: socket.tag)
+            handlers[socket.tag] = nil
+        }
 	}
 	
 	private func performCheck() {
-		events().forEach { e in
-			handlers[e]!()
-		}
-		start()
+        let currentHandlers: [Int32: () -> Void] = syncQueue.sync { handlers }
+        events().forEach { e in
+            currentHandlers[e]?()
+        }
+        start()
 	}
 	
 	private func setState(_ state: Int32, socket: Int32) {
