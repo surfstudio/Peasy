@@ -34,6 +34,9 @@ final class Socket {
 	private func enableAddressReuse() {
 		var reuse = Int32(truncating: true)
 		let success = setsockopt(tag, SOL_SOCKET, SO_REUSEADDR, &reuse, socklen_t(MemoryLayout<Int32>.size)) >= 0
+
+        var no_sig_pipe: Int32 = 1
+        setsockopt(tag, SOL_SOCKET, SO_NOSIGPIPE, &no_sig_pipe, socklen_t(MemoryLayout<Int32>.size))
 		guard success else { fatalError(DarwinError().message) }
 	}
 	
